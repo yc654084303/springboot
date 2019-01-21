@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.osdevs.testspringboot.dao.Userdao">
+    <resultMap id="BaseUserMap" type="com.osdevs.testspringboot.entity.User">
+        <result column="id" jdbcType="INTEGER" property="id" />
+        <result column="userId" jdbcType="VARCHAR" property="userId" />
+        <result column="userName" jdbcType="VARCHAR" property="userName" />
+        <result column="passWord" jdbcType="VARCHAR" property="passWord" />
+        <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+        <result column="userUrl" jdbcType="VARCHAR" property="userUrl" />
+        <result column="email" jdbcType="VARCHAR" property="email" />
+        <result column="registerTime" jdbcType="TIMESTAMP" property="registerTime"  javaType="java.util.Date"/>
+        <result column="userType" javaType="INTEGER" property="userType"/>
+    </resultMap>
+
+    <sql id="insert_registerUser_column">
+    userId, userName, passWord,mobile,userUrl,email,registerTime,userType
+  </sql>
+
+    <sql id="insert_registerUser_value">
+          #{userId},#{userName}, #{passWord},  #{mobile}, #{userUrl}, #{email},  #{registerTime}, #{userType}
+    </sql>
+
+    <select id="loginUser" resultMap="BaseUserMap">
+        select  * from t_user where
+      (email  = #{userName} or mobile = #{userName})
+      and password =#{passWord}
+    </select>
+    <select id="findByUserName" resultMap="BaseUserMap">
+        select  * from t_user where userId =#{userId}
+    </select>
+
+    <insert id="registerUser" parameterType="com.osdevs.testspringboot.entity.User"
+        keyProperty="id" useGeneratedKeys="true">
+        insert INTO t_user (<include refid="insert_registerUser_column" />)VALUES(<include refid="insert_registerUser_value" />)
+    </insert>
+    <select id="isUserMobileOrEmailExist" parameterType="String" resultMap="BaseUserMap">
+        select * from t_user where
+
+        <if test="userType==1">
+            mobile =#{userName}
+        </if>
+       <if test="userType==2">
+        email =#{userName}
+        </if>
+    </select>
+
+</mapper>
